@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>天气预报 App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      text-align: center;
+      padding: 50px;
+    }
+    .weather-app {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 200px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="weather-app">
+    <h1>天气预报 App</h1>
+    <input type="text" id="city" placeholder="shanghai" />
+    <button onclick="getWeather()">查询天气</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    // 替换为你的 OpenWeatherMap API 密钥
+    const apiKey = 'beceeefece7018e92c9a9a86056febae';
+    
+    function getWeather() {
+      const city = document.getElementById('city').value;
+      if (!city) {
+        alert('请输入城市名');
+        return;
+      }
+      
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=zh_cn`;
+      
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.cod !== 200) {
+            document.getElementById('result').innerHTML = `<p>未找到该城市的天气信息，请检查城市名后重试。</p>`;
+            return;
+          }
+          
+          const weatherHtml = `
+            <h2>${data.name}, ${data.sys.country}</h2>
+            <p>${data.weather[0].description}</p>
+            <p>温度: ${data.main.temp}°C</p>
+            <p>湿度: ${data.main.humidity}%</p>
+            <p>风速: ${data.wind.speed} m/s</p>
+          `;
+          document.getElementById('result').innerHTML = weatherHtml;
+        })
+        .catch(error => {
+          console.error('获取天气数据时出错:', error);
+          document.getElementById('result').innerHTML = `<p>获取数据出错，请稍后重试。</p>`;
+        });
+    }
+  </script>
+</body>
+</html>
